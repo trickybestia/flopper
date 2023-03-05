@@ -1,0 +1,16 @@
+[Unit]
+Description=flopper service
+Wants=network-online.target
+After=network-online.target nss-lookup.target
+
+[Service]
+Type=exec
+User=flopper
+ExecStart=/opt/flopper --config /etc/flopper.conf
+Restart=on-failure
+SyslogIdentifier=flopper
+Nice=-10
+MemorySwapMax=0
+
+[Install]
+WantedBy=multi-user.target
