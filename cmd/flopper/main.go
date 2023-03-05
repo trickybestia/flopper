@@ -11,6 +11,8 @@ func main() {
 	args := parseArgs()
 	config := loadConfig(args.Config)
 
+	log.SetFlags(config.GetLoggerFlags())
+
 	bot, err := bot.New(config.Token)
 
 	if err != nil {

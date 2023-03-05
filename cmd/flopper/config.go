@@ -13,6 +13,8 @@ type config struct {
 	CommandSuccessReaction string
 	CommandFailReaction    string
 
+	LogTimeFormat string
+
 	PlayCommandNames   []string
 	ShowCommandNames   []string
 	ClearCommandNames  []string
@@ -20,6 +22,21 @@ type config struct {
 	SkipCommandNames   []string
 	PauseCommandNames  []string
 	ResumeCommandNames []string
+}
+
+func (config *config) GetLoggerFlags() int {
+	switch config.LogTimeFormat {
+	case "local":
+		return log.Ldate | log.Ltime
+	case "utc":
+		return log.Ldate | log.Ltime | log.LUTC
+	case "none":
+		return 0
+	default:
+		log.Fatalf("`%s` is invalid value for LogTimeFormat", config.LogTimeFormat)
+	}
+
+	return 0
 }
 
 func loadConfig(path string) config {
