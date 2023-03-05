@@ -12,7 +12,7 @@ func (bot *Bot) onMessage(s *discordgo.Session, m *discordgo.MessageCreate) {
 			command, args := match.command, match.args
 
 			if err := command(bot.Session, m.Message, args); err != nil {
-				log.Printf("Command `%s` failed with error `%s`\n", match.prefix, err)
+				log.Printf("Command `%s` failed with error `%s`", match.prefix, err)
 
 				if bot.CommandFailReaction != "" {
 					s.MessageReactionAdd(m.ChannelID, m.ID, bot.CommandFailReaction)
