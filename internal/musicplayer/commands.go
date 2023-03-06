@@ -93,15 +93,37 @@ func (musicPlayer *MusicPlayer) SkipCommand(s *discordgo.Session, m *discordgo.M
 func (musicPlayer *MusicPlayer) RemoveCommand(s *discordgo.Session, m *discordgo.Message, args string) error {
 	musicPlayer.Lock()
 
-	defer musicPlayer.Unlock()
+	connection := musicPlayer.getConnection(m.GuildID)
 
-	_, err := strconv.ParseInt(args, 10, 64)
+	musicPlayer.Unlock()
+
+	if connection == nil {
+		return errors.New("not connected")
+	}
+
+	connection.Lock()
+
+	defer connection.Unlock()
+
+	trackIndex, err := strconv.ParseInt(args, 10, 64)
 
 	if err != nil {
 		return err
 	}
 
-	return errors.New("not implemented")
+	trackIndex--
+
+	if trackIndex < 0 || trackIndex >= int64(len(connection.tracks)) {
+		return errors.New("invalid track index")
+	}
+
+	if trackIndex == 0 {
+		connection.Skip()
+	} else {
+		connection.tracks = append(connection.tracks[:trackIndex], connection.tracks[trackIndex+1:]...)
+	}
+
+	return nil
 }
 
 func (musicPlayer *MusicPlayer) ShowCommand(s *discordgo.Session, m *discordgo.Message, args string) error {
