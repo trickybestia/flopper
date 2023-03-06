@@ -10,10 +10,17 @@ import (
 
 type Command func(*discordgo.Session, *discordgo.Message, string) error
 
+type CommandEntry struct {
+	Command         Command
+	Aliases         []string // first name is considered main
+	Description     string
+	ArgsDescription string
+}
+
 type Bot struct {
 	Session                *discordgo.Session
+	Commands               []CommandEntry
 	CommandPrefix          string
-	Commands               map[string]Command
 	CommandSuccessReaction string
 	CommandFailReaction    string
 }
@@ -27,18 +34,12 @@ func New(token string) (*Bot, error) {
 
 	bot := Bot{
 		Session:  session,
-		Commands: make(map[string]Command),
+		Commands: make([]CommandEntry, 0),
 	}
 
 	session.AddHandler(bot.onMessage)
 
 	return &bot, nil
-}
-
-func (bot *Bot) RegisterCommand(command Command, names []string) {
-	for _, name := range names {
-		bot.Commands[name] = command
-	}
 }
 
 func (bot *Bot) Run() error {

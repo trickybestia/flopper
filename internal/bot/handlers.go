@@ -7,19 +7,25 @@ import (
 )
 
 func (bot *Bot) onMessage(s *discordgo.Session, m *discordgo.MessageCreate) {
-	if command := tryRemovePrefix(m.Content, bot.CommandPrefix); command != nil {
-		if match := tryFindCommand(*command, bot.Commands); match != nil {
-			command, args := match.command, match.args
+	commandLine, err := removePrefix(m.Content, bot.CommandPrefix)
 
-			if err := command(bot.Session, m.Message, args); err != nil {
-				log.Printf("Command `%s` failed with error `%s`", match.prefix, err)
+	if err != nil {
+		return
+	}
 
-				if bot.CommandFailReaction != "" {
-					s.MessageReactionAdd(m.ChannelID, m.ID, bot.CommandFailReaction)
-				}
-			} else if bot.CommandSuccessReaction != "" {
-				s.MessageReactionAdd(m.ChannelID, m.ID, bot.CommandSuccessReaction)
-			}
+	foundCommand, err := bot.findCommand(commandLine)
+
+	if err != nil {
+		return
+	}
+
+	if err := foundCommand.command(bot.Session, m.Message, foundCommand.args); err != nil {
+		log.Printf("Command `%s` failed with error `%s`", foundCommand.alias, err)
+
+		if bot.CommandFailReaction != "" {
+			s.MessageReactionAdd(m.ChannelID, m.ID, bot.CommandFailReaction)
 		}
+	} else if bot.CommandSuccessReaction != "" {
+		s.MessageReactionAdd(m.ChannelID, m.ID, bot.CommandSuccessReaction)
 	}
 }

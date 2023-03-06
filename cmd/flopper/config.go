@@ -15,13 +15,14 @@ type config struct {
 
 	LogTimeFormat string
 
-	PlayCommandNames   []string
-	ShowCommandNames   []string
-	ClearCommandNames  []string
-	RemoveCommandNames []string
-	SkipCommandNames   []string
-	PauseCommandNames  []string
-	ResumeCommandNames []string
+	HelpCommandAliases   []string
+	PlayCommandAliases   []string
+	ShowCommandAliases   []string
+	ClearCommandAliases  []string
+	RemoveCommandAliases []string
+	SkipCommandAliases   []string
+	PauseCommandAliases  []string
+	ResumeCommandAliases []string
 }
 
 func (config *config) GetLoggerFlags() int {

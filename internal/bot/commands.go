@@ -1,55 +1,53 @@
 package bot
 
 import (
-	"strings"
-	"unicode/utf8"
+	"errors"
+	"fmt"
+
+	"github.com/bwmarrin/discordgo"
 )
 
-func tryRemovePrefix(s string, prefix string) *string {
-	s = strings.TrimSpace(s)
+func (bot *Bot) HelpCommand(s *discordgo.Session, m *discordgo.Message, args string) error {
+	getHelpMessage := func(commandEntry CommandEntry, alias string) string {
+		helpMessage := fmt.Sprintf("%s%s ", bot.CommandPrefix, alias)
 
-	if strings.HasPrefix(s, prefix) {
-		s = strings.TrimSpace(strings.TrimPrefix(s, prefix))
+		if commandEntry.Description != "" {
+			if commandEntry.ArgsDescription != "" {
+				helpMessage += commandEntry.ArgsDescription + " "
+			}
 
-		return &s
-	} else {
-		return nil
-	}
-}
-
-type commandFindResult struct {
-	command Command
-	prefix  string
-	args    string
-}
-
-func tryFindCommand(command string, commands map[string]Command) *commandFindResult {
-	type BestMatch struct {
-		runes  int
-		prefix string
-		Command
-	}
-
-	var bestMatch *BestMatch
-
-	for k, v := range commands {
-		runes := utf8.RuneCountInString(k)
-
-		if (bestMatch == nil || runes > bestMatch.runes) && strings.HasPrefix(command, k) {
-			bestMatch = &BestMatch{
-				runes:   runes,
-				Command: v,
-				prefix:  k}
+			helpMessage += commandEntry.Description
+		} else {
+			helpMessage += "описание отсутствует"
 		}
+
+		return helpMessage
 	}
 
-	if bestMatch != nil {
-		args := strings.TrimSpace(command[len(bestMatch.prefix):])
-		return &commandFindResult{
-			command: bestMatch.Command,
-			prefix:  bestMatch.prefix,
-			args:    args}
+	response := ""
+
+	if args == "" {
+		for _, commandEntry := range bot.Commands {
+			response += getHelpMessage(commandEntry, commandEntry.Aliases[0]) + "\n"
+		}
 	} else {
-		return nil
+		for _, commandEntry := range bot.Commands {
+			for _, alias := range commandEntry.Aliases {
+				if alias == args {
+					response += getHelpMessage(commandEntry, alias)
+
+					goto EXIT_FOR
+				}
+			}
+		}
+
+		return errors.New("command does not exist")
+
+	EXIT_FOR:
 	}
+
+	_, err := s.ChannelMessageSendComplex(m.ChannelID, &discordgo.MessageSend{
+		Embed: &discordgo.MessageEmbed{Description: response}})
+
+	return err
 }

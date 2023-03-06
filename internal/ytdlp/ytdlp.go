@@ -33,21 +33,21 @@ func GetInfo(ytdlpArg string) (*Info, error) {
 		return nil, err
 	}
 
-	info.AudioUrl = *audioUrl
+	info.AudioUrl = audioUrl
 
 	return &info, nil
 }
 
-func getAudioUrl(url string) (*string, error) {
+func getAudioUrl(url string) (string, error) {
 	cmd := exec.Command("yt-dlp", "-x", "--get-url", "--no-playlist", url)
 
 	output, err := cmd.Output()
 
 	if err != nil {
-		return nil, err
+		return "", err
 	}
 
 	result := string(output)
 
-	return &result, nil
+	return result, nil
 }
