@@ -19,13 +19,15 @@ func (bot *Bot) onMessage(s *discordgo.Session, m *discordgo.MessageCreate) {
 		return
 	}
 
-	if err := foundCommand.command(bot.Session, m.Message, foundCommand.args); err != nil {
-		log.Printf("Command `%s` failed with error `%s`", foundCommand.alias, err)
+	go func() {
+		if err := foundCommand.command(bot.Session, m.Message, foundCommand.args); err != nil {
+			log.Printf("Command `%s` failed with error `%s`", foundCommand.alias, err)
 
-		if bot.CommandFailReaction != "" {
-			s.MessageReactionAdd(m.ChannelID, m.ID, bot.CommandFailReaction)
+			if bot.CommandFailReaction != "" {
+				s.MessageReactionAdd(m.ChannelID, m.ID, bot.CommandFailReaction)
+			}
+		} else if bot.CommandSuccessReaction != "" {
+			s.MessageReactionAdd(m.ChannelID, m.ID, bot.CommandSuccessReaction)
 		}
-	} else if bot.CommandSuccessReaction != "" {
-		s.MessageReactionAdd(m.ChannelID, m.ID, bot.CommandSuccessReaction)
-	}
+	}()
 }
