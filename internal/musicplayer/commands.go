@@ -33,7 +33,15 @@ func (musicPlayer *MusicPlayer) PlayCommand(s *discordgo.Session, m *discordgo.M
 		}
 
 		justConnected = true
+
+		connection.Lock()
+
+		defer connection.Unlock()
 	} else if args == "" {
+		connection.Lock()
+
+		defer connection.Unlock()
+
 		return connection.Resume()
 	}
 
