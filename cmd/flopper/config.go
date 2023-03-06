@@ -9,6 +9,10 @@ import (
 type config struct {
 	Token string
 
+	Status       string
+	StatusType   string
+	StreamingUrl string
+
 	CommandPrefix          string
 	CommandSuccessReaction string
 	CommandFailReaction    string

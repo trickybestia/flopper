@@ -3,6 +3,7 @@ package main
 import (
 	"log"
 
+	"github.com/bwmarrin/discordgo"
 	botPkg "github.com/trickybestia/flopper/internal/bot"
 	"github.com/trickybestia/flopper/internal/musicplayer"
 )
@@ -18,6 +19,23 @@ func main() {
 	if err != nil {
 		log.Fatalln(err)
 	}
+
+	bot.Session.AddHandler(func(s *discordgo.Session, event *discordgo.Ready) {
+		switch config.StatusType {
+		case "none":
+			break
+		case "listening":
+			bot.Session.UpdateListeningStatus(config.Status)
+		case "watching":
+			bot.Session.UpdateWatchStatus(0, config.Status)
+		case "playing":
+			bot.Session.UpdateGameStatus(0, config.Status)
+		case "streaming":
+			bot.Session.UpdateStreamingStatus(0, config.Status, config.StreamingUrl)
+		default:
+			log.Fatalf("`%s` is invalid value for StatusType", config.StatusType)
+		}
+	})
 
 	bot.CommandPrefix = config.CommandPrefix
 	bot.CommandSuccessReaction = config.CommandSuccessReaction
