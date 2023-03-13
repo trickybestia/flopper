@@ -25,10 +25,14 @@ type MusicPlayer struct {
 }
 
 func New(bot *bot.Bot) *MusicPlayer {
-	return &MusicPlayer{
+	musicPlayer := &MusicPlayer{
 		bot:         bot,
 		connections: make(map[string]*MusicPlayerVoiceConnection),
 	}
+
+	bot.Session.AddHandler(musicPlayer.onVoiceStateUpdate)
+
+	return musicPlayer
 }
 
 func (musicPlayer *MusicPlayer) Connect(guildID string, channelID string) (*MusicPlayerVoiceConnection, error) {
@@ -54,6 +58,10 @@ func (musicPlayer *MusicPlayer) Connect(guildID string, channelID string) (*Musi
 }
 
 func (musicPlayer *MusicPlayer) getConnection(guildID string) *MusicPlayerVoiceConnection {
+	musicPlayer.Lock()
+
+	defer musicPlayer.Unlock()
+
 	if connection, ok := musicPlayer.connections[guildID]; ok {
 		return connection
 	}

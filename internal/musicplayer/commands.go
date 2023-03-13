@@ -11,11 +11,7 @@ import (
 )
 
 func (musicPlayer *MusicPlayer) PlayCommand(s *discordgo.Session, m *discordgo.Message, args string) error {
-	musicPlayer.Lock()
-
 	connection := musicPlayer.getConnection(m.GuildID)
-
-	musicPlayer.Unlock()
 
 	justConnected := false
 
@@ -71,11 +67,7 @@ func (musicPlayer *MusicPlayer) PlayCommand(s *discordgo.Session, m *discordgo.M
 }
 
 func (musicPlayer *MusicPlayer) SkipCommand(s *discordgo.Session, m *discordgo.Message, args string) error {
-	musicPlayer.Lock()
-
 	connection := musicPlayer.getConnection(m.GuildID)
-
-	musicPlayer.Unlock()
 
 	if connection == nil {
 		return errors.New("not connected")
@@ -91,11 +83,7 @@ func (musicPlayer *MusicPlayer) SkipCommand(s *discordgo.Session, m *discordgo.M
 }
 
 func (musicPlayer *MusicPlayer) RemoveCommand(s *discordgo.Session, m *discordgo.Message, args string) error {
-	musicPlayer.Lock()
-
 	connection := musicPlayer.getConnection(m.GuildID)
-
-	musicPlayer.Unlock()
 
 	if connection == nil {
 		return errors.New("not connected")
@@ -127,11 +115,7 @@ func (musicPlayer *MusicPlayer) RemoveCommand(s *discordgo.Session, m *discordgo
 }
 
 func (musicPlayer *MusicPlayer) ShowCommand(s *discordgo.Session, m *discordgo.Message, args string) error {
-	musicPlayer.Lock()
-
 	connection := musicPlayer.getConnection(m.GuildID)
-
-	musicPlayer.Unlock()
 
 	message := ""
 
@@ -163,11 +147,7 @@ func (musicPlayer *MusicPlayer) ShowCommand(s *discordgo.Session, m *discordgo.M
 }
 
 func (musicPlayer *MusicPlayer) ClearCommand(s *discordgo.Session, m *discordgo.Message, args string) error {
-	musicPlayer.Lock()
-
 	connection := musicPlayer.getConnection(m.GuildID)
-
-	musicPlayer.Unlock()
 
 	if connection == nil {
 		return errors.New("not connected")
@@ -183,11 +163,7 @@ func (musicPlayer *MusicPlayer) ClearCommand(s *discordgo.Session, m *discordgo.
 }
 
 func (musicPlayer *MusicPlayer) PauseCommand(s *discordgo.Session, m *discordgo.Message, args string) error {
-	musicPlayer.Lock()
-
 	connection := musicPlayer.getConnection(m.GuildID)
-
-	musicPlayer.Unlock()
 
 	if connection == nil {
 		return errors.New("not connected")
@@ -201,11 +177,7 @@ func (musicPlayer *MusicPlayer) PauseCommand(s *discordgo.Session, m *discordgo.
 }
 
 func (musicPlayer *MusicPlayer) ResumeCommand(s *discordgo.Session, m *discordgo.Message, args string) error {
-	musicPlayer.Lock()
-
 	connection := musicPlayer.getConnection(m.GuildID)
-
-	musicPlayer.Unlock()
 
 	if connection == nil {
 		return errors.New("not connected")
